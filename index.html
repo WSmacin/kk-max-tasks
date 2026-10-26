@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0050C8">
+<title>КК Задачи · Kapika</title>
+<script src="https://st.max.ru/js/max-web-app.js"></script>
+<style>
+*{box-sizing:border-box}html,body{margin:0;padding:0;height:100%}
+:root{
+  --accent:#0050c8;--accent2:#003fa0;--accent-soft:#e3eef9;
+  --brand-red:#e82028;--brand-soft:#d0e0f0;
+  --bg:#f6f7f9;--card:#fff;--text:#17202b;--muted:#72808f;--line:#e3e8ee;
+  --red:#b42318;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+  font-family:"Segoe UI",system-ui,-apple-system,sans-serif
+}
+body{background:var(--bg);color:var(--text);min-height:100%;display:flex;flex-direction:column}
+[hidden]{display:none!important}
+button,input,textarea{font:inherit}button{cursor:pointer}
+:focus-visible{outline:3px solid rgba(0,80,200,.35);outline-offset:2px}
+.app{flex:1;display:flex;flex-direction:column;min-height:100dvh;max-width:480px;margin:0 auto;width:100%;background:var(--bg);position:relative}
+.appbar{background:#fff;border-bottom:1px solid var(--line);padding:calc(10px + var(--safe-top)) 16px 12px;display:flex;align-items:center;gap:10px;flex:none;position:sticky;top:0;z-index:20}
+.logo{width:36px;height:36px;border-radius:50%;object-fit:cover;flex:none;background:var(--brand-soft);border:1px solid var(--line)}
+.logo.lg{width:62px;height:62px;border-radius:50%;margin:0 auto 12px;display:block;border:0}
+.appbar h1{margin:0;font-size:16px;line-height:1.1}.appbar small{color:var(--muted);font-size:11px}
+.appbar .sp{flex:1}
+.icon-btn{width:36px;height:36px;border:1px solid var(--line);background:#fff;border-radius:10px;display:grid;place-items:center;font-size:18px}
+.viewport{flex:1;overflow:hidden;position:relative}
+.screen{position:absolute;inset:0;overflow-y:auto;padding:14px 14px calc(18px + var(--safe-bottom));opacity:0;transform:translateX(12px);pointer-events:none;transition:opacity .2s ease,transform .2s ease;-webkit-overflow-scrolling:touch}
+.screen.active{opacity:1;transform:none;pointer-events:auto}
+.screen.with-bottom{padding-bottom:calc(88px + var(--safe-bottom))}
+.search{display:flex;gap:8px;margin-bottom:12px}.search input{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px 12px;font-size:13px}
+.filters{display:flex;gap:0;margin:2px 0 12px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+.filter{flex:1;border:0;background:transparent;padding:9px 8px;font-size:12px;white-space:nowrap;color:#475467;border-right:1px solid var(--line)}
+.filter:last-child{border-right:0}.filter.active{background:var(--accent-soft);color:var(--accent2);font-weight:700}
+.sec-title{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:14px 2px 8px}
+.task{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 13px 11px;margin-bottom:9px;text-align:left;width:100%}
+.task-top{display:flex;gap:8px;align-items:center;margin-bottom:7px}
+.num{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 7px;border-radius:6px}
+.badge{margin-left:auto;font-size:11px;font-weight:700;padding:4px 8px;border-radius:6px;background:#eef2f7;color:#475467;white-space:nowrap}
+.badge.new{background:#fff4e5;color:#93370d}.badge.work{background:var(--accent-soft);color:var(--accent2)}.badge.done{background:#eef2f7;color:#667085;text-decoration:line-through}
+.task h3{margin:0 0 5px;font-size:14px;line-height:1.35}.task p{margin:0;font-size:12px;color:var(--muted);line-height:1.45}
+.task-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:#667085}.task-meta b{color:#344054;font-weight:600}
+.deadline.over{color:var(--red);font-weight:700}
+.fab{position:fixed;right:max(16px,calc(50% - 224px));bottom:calc(76px + var(--safe-bottom));z-index:12;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 14px;font-weight:700;font-size:13px;box-shadow:0 4px 12px rgba(0,80,200,.22);display:none;gap:7px;align-items:center}
+.fab.show{display:flex}.fab:hover{background:var(--accent2)}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.card h3{margin:0 0 8px;font-size:14px}.muted{color:var(--muted);font-size:12px;line-height:1.55}
+.meta{display:grid;grid-template-columns:92px 1fr;gap:8px 10px;font-size:12px}.meta dt{color:var(--muted)}.meta dd{margin:0;font-weight:600}
+.file{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #eef1f4}.file:first-of-type{border-top:0}
+.file-ic{width:38px;height:38px;border-radius:8px;background:#f2f4f7;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--muted);flex:none}
+.file b{font-size:12px;display:block}.file span{font-size:11px;color:var(--muted)}
+.file button{margin-left:auto;border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 9px;font-size:12px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0 9px}
+.btn{border:0;border-radius:10px;padding:13px 12px;font-weight:700;font-size:13px;background:var(--accent);color:#fff}.btn:hover{background:var(--accent2)}.btn.secondary{background:#fff;color:var(--text);border:1px solid var(--line)}.btn.ghost{background:var(--accent-soft);color:var(--accent2)}.btn.danger{background:#fff;color:var(--red);border:1px solid #f2c8c5}.btn:disabled{opacity:.55;cursor:default}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+textarea,input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#fff;font-size:13px;color:var(--text)}
+textarea{resize:vertical;min-height:76px}
+.activity{border-top:1px solid #eef1f4;padding:10px 0}.activity b{font-size:12px}.activity p{margin:4px 0 0;font-size:12px;color:#475467;line-height:1.5}.activity time{font-size:11px;color:var(--muted)}
+.bottom{flex:none;background:#fff;border-top:1px solid var(--line);padding:8px 10px calc(12px + var(--safe-bottom));display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;position:sticky;bottom:0;z-index:20;max-width:480px;width:100%;margin:0 auto}
+.bottom[hidden]{display:none}
+.navbtn{border:0;background:transparent;border-radius:10px;padding:8px 4px;font-size:11px;color:#667085;display:grid;gap:3px;place-items:center}.navbtn span{font-size:19px;line-height:1}.navbtn.active{color:var(--accent);background:var(--accent-soft);font-weight:700}
+.thread{display:flex;flex-direction:column;gap:9px;padding-bottom:6px}
+.msg{max-width:84%;padding:10px 11px;border-radius:12px;font-size:13px;line-height:1.45;background:#fff;border:1px solid var(--line)}.msg.me{align-self:flex-end;background:var(--accent);color:#fff;border-color:var(--accent)}.msg small{display:block;font-size:10px;opacity:.75;margin-bottom:4px;font-weight:700}.msg time{display:block;font-size:10px;opacity:.65;margin-top:5px;text-align:right}
+.sys{align-self:center;font-size:11px;color:var(--muted);background:#eef1f4;padding:6px 9px;border-radius:8px;text-align:center}
+.composer{position:sticky;bottom:0;background:var(--bg);padding:10px 0 2px;display:flex;gap:8px}.composer input{flex:1}.composer button{border:0;background:var(--accent);color:#fff;border-radius:10px;padding:0 14px;font-weight:700}
+.note{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px}.note b{font-size:13px}.note p{margin:5px 0 0;font-size:12px;color:#475467;line-height:1.5}.note time{font-size:11px;color:var(--muted)}
+.quick{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+.menu{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.menu button{width:100%;display:flex;gap:11px;align-items:center;padding:14px;border:0;background:#fff;border-bottom:1px solid #eef1f4;text-align:left;font-size:13px;color:var(--text)}.menu button:last-child{border-bottom:0}.menu small{margin-left:auto;color:var(--muted)}
+.bind-hero{text-align:center;padding:22px 12px 10px}
+.code-input{text-align:center;letter-spacing:.18em;font-weight:800;font-size:18px!important;text-transform:uppercase}
+.error{color:var(--red);font-size:12px;min-height:18px;margin-top:7px}
+.switch{display:flex;justify-content:space-between;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;font-size:13px}
+.toggle{width:46px;height:28px;border-radius:14px;border:0;background:#d0d5dd;position:relative;flex:none}.toggle::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.15s}.toggle.on{background:var(--accent)}.toggle.on::after{left:21px}
+.sheet-wrap{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:40;display:none;align-items:flex-end;max-width:480px;margin:0 auto;left:0;right:0}.sheet-wrap.open{display:flex}
+.sheet{background:#fff;border-radius:16px 16px 0 0;padding:18px 16px calc(28px + var(--safe-bottom));width:100%}.sheet h3{margin:0 0 12px;font-size:16px}.field{margin-bottom:10px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+.toast{position:fixed;left:50%;bottom:calc(88px + var(--safe-bottom));transform:translateX(-50%) translateY(12px);background:#17202b;color:#fff;padding:10px 14px;border-radius:10px;font-size:12px;opacity:0;pointer-events:none;transition:.2s;z-index:50;max-width:min(86%,460px);text-align:center}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.banner{background:var(--accent-soft);color:var(--accent2);font-size:11px;padding:6px 12px;text-align:center;border-bottom:1px solid var(--line)}
+.banner[hidden]{display:none}
+.empty{padding:18px 12px;text-align:center;color:var(--muted);font-size:13px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="banner" id="demoBanner" hidden></div>
+  <header class="appbar">
+    <button class="icon-btn" id="backBtn" aria-label="Назад" hidden>‹</button>
+    <img class="logo" src="logo.jpg" alt="Kapika" width="36" height="36">
+    <div><h1 id="appTitle">КК Задачи</h1><small id="appSub">Kapika · Max</small></div>
+    <div class="sp"></div>
+  </header>
+
+  <div class="viewport" id="viewport">
+    <section class="screen active with-bottom" id="screen-tasks" aria-label="Список задач">
+      <div class="search"><input type="text" id="taskSearch" placeholder="Поиск по задачам…" aria-label="Поиск по задачам"></div>
+      <div class="filters" role="tablist">
+        <button class="filter active" data-filter="all" type="button">Активные</button>
+        <button class="filter" data-filter="mine" type="button">Мои</button>
+        <button class="filter" data-filter="over" type="button">Просроченные</button>
+        <button class="filter" data-filter="done" type="button">Выполненные</button>
+      </div>
+      <div class="sec-title"><span id="taskCount">0 задач</span></div>
+      <div id="taskList"></div>
+    </section>
+
+    <section class="screen" id="screen-card" aria-label="Карточка задачи">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><span class="num" id="cardNum">#—</span><span class="badge" id="cardBadge">—</span><span style="margin-left:auto;font-size:11px;color:var(--muted)" id="cardDeadlineTop"></span></div>
+      <h2 id="cardTitle" style="margin:0 0 8px;font-size:19px;line-height:1.3"></h2>
+      <p class="muted" id="cardDesc"></p>
+      <div class="card"><dl class="meta">
+        <dt>Автор</dt><dd id="cardAuthor">—</dd>
+        <dt>Исполнитель</dt><dd id="cardAssignee">Вы</dd>
+        <dt>Предмет</dt><dd id="cardSubject">—</dd>
+        <dt>Срок</dt><dd id="cardDeadline">—</dd>
+      </dl></div>
+      <div class="card"><h3>Файлы</h3><div id="fileList"><p class="muted" style="margin:0">Нет файлов</p></div></div>
+      <div class="actions">
+        <button class="btn" id="acceptBtn" type="button" onclick="acceptTask()">Принять</button>
+        <button class="btn ghost" id="doneBtn" type="button" onclick="doneTask()">Выполнить</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn secondary" type="button" onclick="toggleComment()">Комментарий</button>
+        <button class="btn secondary" type="button" onclick="navigate('discussion')">Обсуждение</button>
+      </div>
+      <div id="commentBox" hidden style="margin-top:12px">
+        <textarea id="commentInput" placeholder="Результат или комментарий…" aria-label="Комментарий"></textarea>
+        <button class="btn" style="width:100%;margin-top:8px" type="button" onclick="postComment()">Отправить</button>
+      </div>
+      <div class="card" style="margin-top:12px"><h3>История</h3><div id="activityList"><p class="muted" style="margin:0">Пока пусто</p></div></div>
+    </section>
+
+    <section class="screen" id="screen-discussion" aria-label="Обсуждение задачи">
+      <div class="sys" id="discSys">Задача</div>
+      <div class="thread" id="thread" style="margin-top:12px">
+        <div class="empty">Сообщения появятся после отправки. История СВ в Mini App — в следующих версиях.</div>
+      </div>
+      <div class="composer"><input type="text" id="discInput" placeholder="Сообщение…" aria-label="Сообщение" onkeydown="if(event.key==='Enter')sendDiscussion()"><button type="button" onclick="sendDiscussion()" aria-label="Отправить">→</button></div>
+    </section>
+
+    <section class="screen with-bottom" id="screen-notes" aria-label="Заметки">
+      <div class="quick">
+        <input type="text" id="noteTitle" placeholder="Заголовок" aria-label="Заголовок заметки">
+        <textarea id="noteText" placeholder="Текст заметки…" style="margin-top:8px;min-height:58px"></textarea>
+        <button class="btn" style="width:100%;margin-top:9px" type="button" onclick="createNote()">Создать заметку</button>
+      </div>
+      <div class="sec-title">Мои заметки</div>
+      <div id="noteList"><div class="empty">Заметок пока нет</div></div>
+    </section>
+
+    <section class="screen with-bottom" id="screen-more" aria-label="Ещё">
+      <div class="card" style="display:flex;gap:11px;align-items:center">
+        <img class="logo" src="logo.jpg" alt="" width="36" height="36">
+        <div><b style="font-size:14px" id="userName">Пользователь</b><div class="muted" id="userSub">привязка к 1С</div></div>
+        <span class="badge" style="margin-left:auto" id="bindBadge">—</span>
+      </div>
+      <div class="sec-title">Сервис</div>
+      <nav class="menu">
+        <button type="button" onclick="navigate('bind')">Привязка аккаунта <small id="bindMenuState">—</small></button>
+        <button type="button" onclick="navigate('notify')">Уведомления <small id="notifyMenuState">—</small></button>
+      </nav>
+      <button class="btn danger" style="width:100%;margin-top:14px" type="button" id="resetBindMoreBtn" onclick="resetBind()" hidden>Сбросить привязку</button>
+      <p class="muted" style="margin:14px 4px 0" id="bridgeMeta" hidden></p>
+    </section>
+
+    <section class="screen" id="screen-notify" aria-label="Уведомления">
+      <div class="card">
+        <div class="switch" style="border:0;padding:4px 0;margin:0">
+          <span>Задачи</span>
+          <button class="toggle on" id="togTasks" type="button" role="switch" aria-checked="true" aria-label="Уведомления о задачах" onclick="toggleNotify('tasks',this)"></button>
+        </div>
+        <div class="switch" style="border:0;padding:4px 0;margin:10px 0 0;border-top:1px solid var(--line);border-radius:0;padding-top:14px">
+          <span>Обсуждения</span>
+          <button class="toggle on" id="togDisc" type="button" role="switch" aria-checked="true" aria-label="Уведомления об обсуждениях" onclick="toggleNotify('disc',this)"></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-bind" aria-label="Привязка аккаунта">
+      <div class="bind-hero">
+        <img class="logo lg" src="logo.jpg" alt="Kapika Bot">
+        <h2 style="margin:0 0 8px;font-size:19px">Привязка к 1С</h2>
+        <p class="muted">Введите код из бота или обработки «Настройки Max Bot»</p>
+      </div>
+      <div class="card">
+        <input type="text" id="bindCode" class="code-input" placeholder="КОД" autocomplete="one-time-code" aria-label="Код привязки" aria-describedby="bindError">
+        <div class="error" id="bindError" role="alert"></div>
+        <button class="btn" style="width:100%" type="button" onclick="submitBind()">Привязать</button>
+        <button class="btn danger" style="width:100%;margin-top:8px" type="button" id="resetBindBtn" onclick="resetBind()" hidden>Сбросить привязку</button>
+      </div>
+    </section>
+  </div>
+
+  <button class="fab" id="fab" type="button" onclick="openSheet()">Новое задание</button>
+
+  <div class="sheet-wrap" id="sheetWrap" role="dialog" aria-modal="true" aria-label="Новое задание">
+    <div class="sheet"><h3>Новое задание</h3>
+      <div class="field"><label for="newTitle">Название</label><input type="text" id="newTitle" placeholder="Что сделать"></div>
+      <div class="field"><label for="newDeadline">Срок</label><input type="text" id="newDeadline" placeholder="Например: завтра"></div>
+      <div class="field"><label for="newDesc">Описание</label><textarea id="newDesc" placeholder="Подробности…"></textarea></div>
+      <button class="btn" style="width:100%" type="button" onclick="createTask()">Создать</button>
+      <button class="btn secondary" style="width:100%;margin-top:8px" type="button" onclick="closeSheet()">Отмена</button>
+    </div>
+  </div>
+
+  <nav class="bottom" id="bottomNav" aria-label="Навигация">
+    <button class="navbtn active" data-nav="tasks" type="button" onclick="navigate('tasks')"><span>✓</span>Задачи</button>
+    <button class="navbtn" data-nav="notes" type="button" onclick="navigate('notes')"><span>▤</span>Заметки</button>
+    <button class="navbtn" data-nav="more" type="button" onclick="navigate('more')"><span>•••</span>Ещё</button>
+  </nav>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<script>
+const qs=new URLSearchParams(location.search);
+const debug=qs.get('debug')==='1';
+// Cloudflare Demo204 — держим до финальной проверки (шаг 7 плана).
+const KK_API=(qs.get('api')||localStorage.getItem('kk_api')||'https://flooring-scientists-nicholas-courage.trycloudflare.com').replace(/\/$/,'');
+const KK_TEST_USER=qs.get('testUser')||localStorage.getItem('kk_test_user')||'175071693';
+const useMock=qs.get('mock')==='1';
+let tasks=[];
+let current=0,bound=false,curScreen='tasks',live=false;
+let notify={tasks:true,disc:true};
+const titles={tasks:['КК Задачи','Kapika · Max'],card:['Задача','#'],discussion:['Обсуждение','Задача'],notes:['Заметки','Личные'],more:['Ещё','Профиль'],bind:['Привязка','Код из бота'],notify:['Уведомления','Задачи · обсуждения']};
+const wa=window.WebApp||null;
+function isMaxHost(){
+  if(!wa) return false;
+  if(wa.initData&&String(wa.initData).length>0) return true;
+  const u=wa.initDataUnsafe;
+  return !!(u&&(u.auth_date||(u.user&&u.user.id)||u.start_param));
+}
+const inMax=isMaxHost();
+
+function $(id){return document.getElementById(id)}
+function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function setBindUI(){
+  $('bindBadge').textContent=bound?'Привязан':'Не привязан';
+  $('bindBadge').className='badge '+(bound?'work':'new');
+  $('bindMenuState').textContent=bound?'OK':'—';
+  $('resetBindBtn').hidden=!bound;
+  $('resetBindMoreBtn').hidden=!bound;
+}
+
+async function api(op, extra={}){
+  const body=Object.assign({op}, extra);
+  const headers={'Content-Type':'application/json'};
+  if(inMax&&wa&&wa.initData){
+    headers['X-Max-Init-Data']=wa.initData;
+    body.initData=wa.initData;
+  }else{
+    headers['X-KK-Test-User']=KK_TEST_USER;
+    body.testUser=KK_TEST_USER;
+  }
+  const r=await fetch(KK_API,{method:'POST',headers,body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({ok:false,message:'bad json'}));
+  if(!r.ok||!j.ok) throw new Error(j.message||('HTTP '+r.status));
+  return j.data;
+}
+
+function mapTask(t,i){
+  return {
+    id:i+1,num:String(t.num),title:t.title||'',desc:t.desc||'',deadline:t.deadline||'',
+    over:!!t.over,status:t.status||'new',statusText:t.statusText||'',subject:t.subject||'',
+    author:t.author||'—'
+  };
+}
+
+async function loadLive(){
+  if(useMock) return false;
+  try{
+    const sess=await api('session');
+    live=true;
+    bound=!!sess.bound;
+    notify.tasks=sess.notifyTasks!==false;
+    notify.disc=sess.notifyDisc!==false;
+    setBindUI();
+    $('userSub').textContent='Max ID '+(sess.maxUserId||'—')+(sess.testMode?' · test':'')+' · '+(bound?'привязан':'не привязан');
+    if(debug){
+      $('bridgeMeta').hidden=false;
+      $('bridgeMeta').textContent='API · '+KK_API+(sess.testMode?' · testUser':'');
+    }
+    if(!inMax&&sess.testMode){
+      $('demoBanner').hidden=false;
+      $('demoBanner').textContent='Тест Demo204 · данные из 1С';
+    }else{
+      $('demoBanner').hidden=true;
+    }
+    if(bound){
+      const d=await api('tasks.list');
+      tasks=(d.tasks||[]).map(mapTask);
+      if(tasks.length) current=tasks[0].id;
+    } else {
+      tasks=[];
+      navigate('bind');
+    }
+    if(sess.startParam) applyStartParam(sess.startParam);
+    else if(wa&&wa.initDataUnsafe&&wa.initDataUnsafe.start_param) applyStartParam(wa.initDataUnsafe.start_param);
+    renderTasks(); syncNotifyUI();
+    return true;
+  }catch(e){
+    console.warn('API fail',e);
+    if(debug){
+      $('bridgeMeta').hidden=false;
+      $('bridgeMeta').textContent='API недоступен · '+e.message;
+    }
+    if(!inMax){
+      $('demoBanner').hidden=false;
+      $('demoBanner').textContent='API недоступен · проверьте туннель / ?api=';
+    }
+    return false;
+  }
+}
+
+function initBridge(){
+  if(!inMax){
+    if(useMock){
+      $('demoBanner').hidden=false;
+      $('demoBanner').textContent='Локальный mock (?mock=1)';
+    }
+    if(debug){
+      $('bridgeMeta').hidden=false;
+      $('bridgeMeta').textContent='Браузер · '+KK_API;
+    }
+    return;
+  }
+  try{
+    if(typeof wa.ready==='function') wa.ready();
+    if(typeof wa.expand==='function') wa.expand();
+  }catch(e){}
+  const u=(wa.initDataUnsafe&&wa.initDataUnsafe.user)||{};
+  const name=[u.first_name,u.last_name].filter(Boolean).join(' ')||u.username||('Max #'+(u.id||''));
+  if(name) $('userName').textContent=name;
+  $('userSub').textContent='Max ID '+(u.id||'—')+' · привязка к 1С';
+  if(debug){
+    $('bridgeMeta').hidden=false;
+    $('bridgeMeta').textContent='MAX · '+(wa.platform||'?')+' · v'+(wa.version||'?');
+  }
+  applyStartParam((wa.initDataUnsafe&&wa.initDataUnsafe.start_param)||'');
+}
+
+function applyStartParam(raw){
+  if(!raw) return;
+  const m=String(raw).match(/^task[_-]?(.+)$/i);
+  if(!m) return;
+  const key=m[1];
+  const t=tasks.find(x=>x.num===key||x.num===String(key).padStart(4,'0')||String(x.id)===String(key));
+  if(t) openTask(t.id);
+}
+
+function renderTasks(filter='all'){
+  const active=document.querySelector('.filter.active');
+  if(active) filter=active.dataset.filter||filter;
+  const q=($('taskSearch').value||'').toLowerCase();
+  const list=tasks.filter(t=>{
+    if(filter==='mine'&&t.status==='done')return false;
+    if(filter==='over'&&!t.over)return false;
+    if(filter==='done'&&t.status!=='done')return false;
+    if(filter==='all'&&t.status==='done')return false;
+    return (t.title+t.num+t.subject).toLowerCase().includes(q);
+  });
+  $('taskList').innerHTML=list.length?list.map(t=>`<button class="task" type="button" onclick="openTask(${t.id})" aria-label="Открыть задачу ${t.num}"><div class="task-top"><span class="num">#${escapeHtml(t.num)}</span><span class="badge ${t.status}">${escapeHtml(t.statusText)}</span></div><h3>${escapeHtml(t.title)}</h3><p>${escapeHtml(t.subject)}</p><div class="task-meta"><span><b class="${t.over&&t.status!=='done'?'deadline over':''}">${escapeHtml(t.deadline||'Без срока')}${t.over&&t.status!=='done'?' · просрочено':''}</b></span></div></button>`).join(''):'<div class="empty">Нет задач</div>';
+  $('taskCount').textContent=list.length+' '+(list.length===1?'задача':(list.length>1&&list.length<5?'задачи':'задач'));
+}
+
+function navigate(name){
+  curScreen=name;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=$('screen-'+name);
+  el.classList.add('active');
+  const showBottom=['tasks','notes','more'].includes(name);
+  el.classList.toggle('with-bottom',showBottom);
+  $('bottomNav').hidden=!showBottom;
+  $('fab').classList.toggle('show',name==='tasks'&&bound);
+  $('backBtn').hidden=!(['card','discussion','bind','notify'].includes(name));
+  const t=titles[name];
+  $('appTitle').textContent=t[0];
+  const cur=tasks.find(x=>x.id===current);
+  $('appSub').textContent=name==='card'?(cur?('#'+cur.num):'#'):t[1];
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.nav===name));
+  if(name==='notify') syncNotifyUI();
+  if(name==='discussion'&&cur) $('discSys').textContent='Задача #'+cur.num;
+  if(name==='bind'||name==='more') setBindUI();
+  $('viewport').scrollTop=0;
+}
+
+$('backBtn').addEventListener('click',()=>{
+  if(curScreen==='discussion') navigate('card');
+  else if(curScreen==='bind'||curScreen==='notify') navigate('more');
+  else navigate('tasks');
+});
+
+function syncNotifyUI(){
+  const n=(notify.tasks?1:0)+(notify.disc?1:0);
+  const ms=$('notifyMenuState'); if(ms) ms.textContent=n+'/2';
+  [['togTasks','tasks'],['togDisc','disc']].forEach(([id,key])=>{
+    const el=$(id); if(!el)return; el.classList.toggle('on',notify[key]); el.setAttribute('aria-checked',String(notify[key]));
+  });
+}
+function toggleNotify(kind,el){
+  notify[kind]=!notify[kind];
+  if(el){ el.classList.toggle('on',notify[kind]); el.setAttribute('aria-checked',String(notify[kind])); }
+  syncNotifyUI();
+  if(live){
+    api('notify.set',{tasks:notify.tasks,disc:notify.disc}).then(()=>toast((kind==='tasks'?'Задачи: ':'Обсуждения: ')+(notify[kind]?'вкл':'выкл')))
+      .catch(e=>{notify[kind]=!notify[kind];syncNotifyUI();toast(e.message)});
+  } else toast('Нужен доступ к API 1С');
+}
+function openTask(id){
+  current=id;
+  const t=tasks.find(x=>x.id===id);
+  if(!t) return;
+  $('cardNum').textContent='#'+t.num;
+  $('cardTitle').textContent=t.title;
+  $('cardDesc').textContent=t.desc||'';
+  $('cardAuthor').textContent=t.author||'—';
+  $('cardSubject').textContent=t.subject||'—';
+  $('cardDeadline').textContent=t.deadline||'—';
+  $('cardDeadlineTop').textContent=(t.deadline||'').toLowerCase();
+  $('fileList').innerHTML='<p class="muted" style="margin:0">Файлы приходят в чат Max</p>';
+  $('activityList').innerHTML='<p class="muted" style="margin:0">Пока пусто</p>';
+  $('thread').innerHTML='<div class="empty">Напишите сообщение — оно уйдёт в обсуждение задачи в 1С</div>';
+  syncCard();
+  navigate('card');
+}
+function syncCard(){
+  const t=tasks.find(x=>x.id===current);
+  if(!t) return;
+  const b=$('cardBadge'); b.textContent=t.statusText; b.className='badge '+t.status;
+  $('acceptBtn').disabled=t.status!=='new';
+  $('acceptBtn').textContent=t.status==='new'?'Принять':'Принята';
+  $('doneBtn').disabled=t.status==='done';
+  $('doneBtn').textContent=t.status==='done'?'Выполнена':'Выполнить';
+  renderTasks();
+}
+async function acceptTask(){
+  const t=tasks.find(x=>x.id===current); if(!t||t.status==='done'){toast('Уже выполнена');return}
+  if(!live){toast('Нужен доступ к API 1С');return}
+  try{ const d=await api('tasks.accept',{num:t.num}); toast(d.message||('Принято · '+t.num)); await refreshTasks(); openTask(current);}catch(e){toast(e.message)}
+}
+async function doneTask(){
+  const t=tasks.find(x=>x.id===current); if(!t) return;
+  if(!live){toast('Нужен доступ к API 1С');return}
+  try{ const d=await api('tasks.done',{num:t.num}); toast(d.message||('Выполнено · '+t.num)); await refreshTasks(); openTask(current);}catch(e){toast(e.message)}
+}
+function toggleComment(){ const b=$('commentBox'); b.hidden=!b.hidden; if(!b.hidden)$('commentInput').focus(); }
+async function postComment(){
+  const v=$('commentInput').value.trim(); if(!v){toast('Введите текст');return}
+  const t=tasks.find(x=>x.id===current);
+  if(!live){toast('Нужен доступ к API 1С');return}
+  try{ const d=await api('tasks.comment',{num:t.num,text:v}); toast(d.message||'Комментарий сохранён'); }
+  catch(e){toast(e.message);return}
+  const list=$('activityList');
+  if(list.querySelector('.muted')) list.innerHTML='';
+  const d=document.createElement('div'); d.className='activity'; d.innerHTML='<b>Вы</b> <time>· только что</time><p></p>'; d.querySelector('p').textContent=v; list.prepend(d); $('commentInput').value=''; $('commentBox').hidden=true;
+}
+async function sendDiscussion(){
+  const inp=$('discInput'),v=inp.value.trim(); if(!v)return;
+  const t=tasks.find(x=>x.id===current);
+  if(!live){toast('Нужен доступ к API 1С');return}
+  try{ const d=await api('tasks.discuss',{num:t.num,text:v}); toast(d.message||'Отправлено'); }
+  catch(e){toast(e.message);return}
+  if($('thread').querySelector('.empty')) $('thread').innerHTML='';
+  const d=document.createElement('div'); d.className='msg me'; d.innerHTML='<small>Вы</small>'+escapeHtml(v)+'<time>только что</time>'; $('thread').appendChild(d); inp.value=''; d.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+async function createNote(){
+  const title=$('noteTitle').value.trim(),text=$('noteText').value.trim(); if(!title&&!text){toast('Заполните заметку');return}
+  const body=(title?(title+': '):'')+text;
+  if(!live){toast('Нужен доступ к API 1С');return}
+  try{ const d=await api('notes.create',{text:body||title}); toast(d.message||'Заметка создана'); }
+  catch(e){toast(e.message);return}
+  if($('noteList').querySelector('.empty')) $('noteList').innerHTML='';
+  const a=document.createElement('article'); a.className='note'; a.innerHTML='<b></b><p></p><time>Только что</time>'; a.querySelector('b').textContent=title||'Новая заметка'; a.querySelector('p').textContent=text||''; $('noteList').prepend(a); $('noteTitle').value=''; $('noteText').value='';
+}
+function openSheet(){ $('sheetWrap').classList.add('open'); setTimeout(()=>$('newTitle').focus(),50) }
+function closeSheet(){ $('sheetWrap').classList.remove('open') }
+$('sheetWrap').addEventListener('click',e=>{if(e.target.id==='sheetWrap')closeSheet()});
+async function createTask(){
+  const title=$('newTitle').value.trim(); if(!title){toast('Укажите название');return}
+  if(!live){toast('Нужен доступ к API 1С');return}
+  try{
+    const d=await api('tasks.create',{text:title+($('newDesc').value.trim()?' · '+$('newDesc').value.trim():'')});
+    toast(d.message||'Создано'); closeSheet(); $('newTitle').value=''; $('newDesc').value=''; await refreshTasks(); navigate('tasks');
+  }catch(e){toast(e.message)}
+}
+async function submitBind(){
+  const v=$('bindCode').value.trim().toUpperCase();
+  if(!v){ $('bindError').textContent='Введите код из бота'; return; }
+  if(!live&&!useMock){
+    try{ await loadLive(); }catch(e){}
+  }
+  if(!live){ $('bindError').textContent='Нет доступа к API 1С'; return; }
+  try{ await api('bind',{code:v}); toast('Привязка OK'); await loadLive(); navigate('tasks'); renderTasks(); }
+  catch(e){ $('bindError').textContent=e.message; }
+}
+async function resetBind(){
+  if(!bound){toast('Привязки нет');return}
+  if(!confirm('Сбросить привязку Max ↔ 1С? Потребуется новый код.')) return;
+  if(!live){toast('Нужен доступ к API 1С');return}
+  try{
+    const d=await api('bind.reset');
+    toast(d.message||'Привязка сброшена');
+    bound=false; tasks=[]; current=0;
+    setBindUI();
+    await loadLive();
+    navigate('bind');
+  }catch(e){toast(e.message)}
+}
+async function refreshTasks(){
+  if(!live||!bound) return;
+  const d=await api('tasks.list');
+  const prev=tasks.find(x=>x.id===current);
+  tasks=(d.tasks||[]).map(mapTask);
+  if(prev){ const n=tasks.find(x=>x.num===prev.num); if(n) current=n.id; else if(tasks[0]) current=tasks[0].id; }
+  renderTasks();
+}
+let toastTimer; function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2200); }
+document.querySelectorAll('.filter').forEach(c=>c.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));c.classList.add('active');renderTasks(c.dataset.filter)}));
+$('taskSearch').addEventListener('input',()=>renderTasks());
+(async()=>{
+  initBridge();
+  setBindUI();
+  const ok=await loadLive();
+  if(!ok){ renderTasks(); syncNotifyUI(); }
+  navigate(bound?'tasks':'bind');
+})();
+</script>
+</body>
+</html>
